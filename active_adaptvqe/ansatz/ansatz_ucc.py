@@ -118,7 +118,7 @@ class Fermionic_ex_UCC:
         op_dagger_op = []
 
         # virtual orbital indices in the active space
-        idarr_vir_to_ex_all_spin = self._idarr_all_vir[:N_vir_to_ex][::-1]
+        idarr_vir_to_ex_all_spin = self._idarr_all_vir[:N_vir_to_ex]
 
         # virtual up-spin orbital indices in the active space
         idarr_vir_to_ex_up_spin = [ele for ele in idarr_vir_to_ex_all_spin if ele in self._idarr_spinup_vir]
@@ -233,6 +233,7 @@ class Fermionic_ex_UCC:
 
         # index array for virtual orbitals in the active space
         N_vir_to_ex_all_spin = self._idarr_all_vir[:N_vir_to_ex][::-1]
+#        N_vir_to_ex_all_spin = self._idarr_all_vir[:N_vir_to_ex]
 
         # index array for occupied orbitals in the active space
         N_occ_to_ex_all_spin = self._idarr_all_occ[-N_occ_to_ex:][::-1]
@@ -255,6 +256,7 @@ class Fermionic_ex_UCC:
         virop_up_down = [
             sorted([x, y], reverse=True) for x in idarr_vir_to_ex_up_spin for y in idarr_vir_to_ex_down_spin
         ]
+
 
         assert len(virop_up_down) == len(idarr_vir_to_ex_up_spin) * len(idarr_vir_to_ex_down_spin)
 
