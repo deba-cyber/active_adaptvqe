@@ -1,13 +1,15 @@
 """Circuit construction for a few specific cases."""
 
 import numpy as np
-from qiskit import QuantumCircuit
+from qiskit.circuit import Parameter, QuantumCircuit
 
 
-def circ_exp_pauli(
-    pauli: str,
-    val: float,
+def _circ_exp_pauli(
     qc: QuantumCircuit,
+    pauli: str,
+    val: Parameter,
+    ucc_singles: bool = False,
+    ucc_doubles: bool = False,
 ) -> None | QuantumCircuit:
     """Generate QuantumCircuit for exponential of a pauli string.
 
@@ -30,9 +32,9 @@ def circ_exp_pauli(
     circ = QuantumCircuit(qc.num_qubits)
 
     # finding qubit locations with `X`,`Y` and `Z` gates.
-    X_loc = [len(pauli) - i - 1 for i, j in enumerate(pauli) if j == "X"][::-1]
-    Y_loc = [len(pauli) - i - 1 for i, j in enumerate(pauli) if j == "Y"][::-1]
-    Z_loc = [len(pauli) - i - 1 for i, j in enumerate(pauli) if j == "Z"][::-1]
+    X_loc = [len(pauli)-i-1 for i, j in enumerate(pauli) if j == "X"][::-1]
+    Y_loc = [len(pauli)-i-1 for i, j in enumerate(pauli) if j == "Y"][::-1]
+    Z_loc = [len(pauli)-i-1 for i, j in enumerate(pauli) if j == "Z"][::-1]
 
     # change of basis(U)
     if len(X_loc) != 0:
@@ -55,11 +57,18 @@ def circ_exp_pauli(
         circ.cx(x, y)
 
     # Rz gate
-    circ.rz(2 * val, qid_max)
+    if ucc_singles:
+        circ.rz(val, qid_max)
+
+    if ucc_doubles:
+        circ.rz(0.25 * val, qid_max)
+
+    if not ucc_singles and not ucc_doubles:
+        circ.rz(2 * val, qid_max)
 
     # the second CNOT staircase
     for x, y in zip(qid_cnot[::-1], qid_cnot[::-1][1:]):
-        circ.cx(x, y)
+        circ.cx(y, x)
 
     # change of basis(U†)
     if len(X_loc) != 0:
@@ -75,7 +84,9 @@ def circ_exp_pauli(
         qc &= circ
 
 
-def add_gates_4_measure(
+
+
+def _add_gates_4_measure(
     qc: QuantumCircuit,
     op: str,
 ) -> None | QuantumCircuit:
@@ -94,8 +105,8 @@ def add_gates_4_measure(
     circ = QuantumCircuit(qc.num_qubits)
 
     # finding qubit locations with `X` and `Y` gates.
-    X_loc = [len(op) - i - 1 for i, j in enumerate(op) if j == "X"][::-1]
-    Y_loc = [len(op) - i - 1 for i, j in enumerate(op) if j == "Y"][::-1]
+    X_loc = [len(op)-i-1 for i, j in enumerate(op) if j == "X"][::-1]
+    Y_loc = [len(op)-i-1 for i, j in enumerate(op) if j == "Y"][::-1]
 
     # change of basis(U)
     if len(X_loc) != 0:

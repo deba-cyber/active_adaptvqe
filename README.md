@@ -1,7 +1,6 @@
 # active\_adaptvqe
 
-Implementation of customized VQE simulator incorporating several features relevant to Hamiltonian simulation 
-of strongly correlated systems.  
+Adaptive Variational Quantum Simulation within active space UCC.
 
 ## Installation
 Create a virtual environment `A` preferably with virtualenv.
